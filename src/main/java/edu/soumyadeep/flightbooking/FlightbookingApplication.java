@@ -1,4 +1,4 @@
-package edu.soumyadeep.flightbooking.app;
+package edu.soumyadeep.flightbooking;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
