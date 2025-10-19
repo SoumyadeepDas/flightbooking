@@ -1,15 +1,29 @@
 package edu.soumyadeep.flightbooking.dto;
 
-
-import edu.soumyadeep.flightbooking.model.User;
+import edu.soumyadeep.flightbooking.model.UserCategory;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CreateUserRequest {
-    @NotBlank private String firstName;
+
+    @NotBlank(message = "First name is required")
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
     private String lastName;
-    @Email private String email;
+
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
+    private String email;
+
+    @NotBlank(message = "Phone number is required")
     private String phone;
-    private User.Category category = User.Category.NONE;
+
+    @NotNull(message = "User category is required")
+    private UserCategory category;
 }
