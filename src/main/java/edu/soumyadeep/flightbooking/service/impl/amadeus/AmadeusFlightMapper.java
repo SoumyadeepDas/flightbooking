@@ -1,6 +1,7 @@
 package edu.soumyadeep.flightbooking.service.impl.amadeus;
 
 import edu.soumyadeep.flightbooking.model.FlightOfferCache;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -8,9 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
+@Slf4j
 public class AmadeusFlightMapper {
-
-    private static final Logger log = LoggerFactory.getLogger(AmadeusFlightMapper.class);
 
     public List<Map<String, Object>> mapFlights(List<Map<String, Object>> apiData,
                                                 String cabin, String tripDirection) {

@@ -4,6 +4,7 @@ import edu.soumyadeep.flightbooking.dto.FlightSearchRequest;
 import edu.soumyadeep.flightbooking.repository.FlightOfferCacheRepository;
 import edu.soumyadeep.flightbooking.service.FlightService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,8 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AmadeusFlightServiceImpl implements FlightService {
-
-    private static final Logger log = LoggerFactory.getLogger(AmadeusFlightServiceImpl.class);
 
     private final FlightOfferCacheRepository offerRepo;
     private final AmadeusAuthService authService;
@@ -36,7 +36,7 @@ public class AmadeusFlightServiceImpl implements FlightService {
         saveAll(outboundMapped);
         allFlights.addAll(outboundMapped);
 
-        // RETURN (if applicable)
+        // RETURN only if applicable
         if ("ROUNDTRIP".equalsIgnoreCase(req.getTripType().toString()) && req.getReturnDate() != null) {
             var returns = apiClient.fetchFlights(req.getDestination(), req.getOrigin(),
                     req.getReturnDate(), req.getCabin(), token, "RETURN");
