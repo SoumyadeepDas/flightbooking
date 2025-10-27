@@ -1,9 +1,6 @@
 package edu.soumyadeep.flightbooking.service.impl.amadeus;
-
 import edu.soumyadeep.flightbooking.model.FlightOfferCache;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -46,6 +43,13 @@ public class AmadeusFlightMapper {
                 flight.put("cabin", cabin);
                 flight.put("tripDirection", tripDirection);
 
+                // Extract and store the departure date (for validation later)
+                if (dep.get("at") != null) {
+                    String fullDateTime = dep.get("at").toString(); // e.g., 2025-11-25T10:30:00
+                    String onlyDate = fullDateTime.split("T")[0];    // -> 2025-11-25
+                    flight.put("departDate", onlyDate);
+                }
+
                 flights.add(flight);
 
             } catch (Exception ex) {
@@ -66,6 +70,8 @@ public class AmadeusFlightMapper {
                 .currency(flight.get("currency").toString())
                 .cabin(flight.get("cabin").toString())
                 .tripDirection(flight.get("tripDirection").toString())
+                // ✅ Persist depart date too if available
+                .departDate(flight.get("departDate") != null ? flight.get("departDate").toString() : null)
                 .build();
     }
 }

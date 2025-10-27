@@ -7,6 +7,7 @@ import edu.soumyadeep.flightbooking.service.FlightService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -74,6 +75,8 @@ public class BookingValidator {
                 throw new RuntimeException("Traveller class is required for each passenger.");
             }
 
+            validatePassengerDob(passenger);
+
             if (!passenger.getTravellerClass().equalsIgnoreCase(cabin)) {
                 throw new RuntimeException(String.format(
                         "Traveller class '%s' does not match selected flight cabin '%s' for passenger %s %s.",
@@ -82,5 +85,58 @@ public class BookingValidator {
                 ));
             }
         }
+    }
+
+    // Validate Passenger Date of Birth
+    private void validatePassengerDob(BookingRequestDto.PassengerDto passenger) {
+        if (passenger.getDob() == null)
+            throw new RuntimeException(String.format("Date of birth is required for passenger %s %s.",
+                    passenger.getFirstName(), passenger.getLastName()));
+
+        LocalDate dob = passenger.getDob();
+        LocalDate today = LocalDate.now();
+
+        if (dob.isAfter(today)) {
+            throw new RuntimeException(String.format(
+                    "Invalid date of birth for passenger %s %s — DOB cannot be in the future (%s).",
+                    passenger.getFirstName(), passenger.getLastName(), dob));
+        }
+
+        if (dob.isBefore(LocalDate.of(1900, 1, 1))) {
+            throw new RuntimeException(String.format(
+                    "Invalid date of birth for passenger %s %s — DOB too old (%s).",
+                    passenger.getFirstName(), passenger.getLastName(), dob));
+        }
+    }
+
+    // Validate Outbound or Return Flight Date Consistency
+    public void validateDateConsistency(BookingRequestDto req, Map<String, Object> offer, boolean isReturn) {
+        if (offer == null || !offer.containsKey("departDate")) {
+            throw new RuntimeException("Offer date information is missing. Please re-fetch flight data.");
+        }
+
+        Object offerDepartDate = offer.get("departDate");
+
+        // Choose the right date to compare (depart vs return)
+        String bookingDate = isReturn
+                ? (req.getReturnDate() != null ? req.getReturnDate().toString() : null)
+                : (req.getDepartDate() != null ? req.getDepartDate().toString() : null);
+
+        if (offerDepartDate == null || bookingDate == null) {
+            throw new RuntimeException("Booking or offer date is missing.");
+        }
+
+        if (!offerDepartDate.toString().equals(bookingDate)) {
+            throw new RuntimeException(String.format(
+                    "%s flight date '%s' does not match the offer date '%s'. Please reselect flight.",
+                    isReturn ? "Return" : "Departure",
+                    bookingDate, offerDepartDate
+            ));
+        }
+    }
+
+    // Overload for One-Way Flights (defaults to outbound check)
+    public void validateDateConsistency(BookingRequestDto req, Map<String, Object> offer) {
+        validateDateConsistency(req, offer, false);
     }
 }

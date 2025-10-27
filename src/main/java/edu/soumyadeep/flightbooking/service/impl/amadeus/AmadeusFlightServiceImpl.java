@@ -64,7 +64,8 @@ public class AmadeusFlightServiceImpl implements FlightService {
                 "price", f.getPrice(),
                 "currency", f.getCurrency(),
                 "cabin", f.getCabin(),
-                "tripDirection", f.getTripDirection()
+                "tripDirection", f.getTripDirection(),
+                "departDate", f.getDepartDate()
         ));
     }
 }
